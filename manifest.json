@@ -1,7 +1,7 @@
 {
   "id": "diary-memos-sync",
   "name": "Diary Memos Sync",
-  "version": "1.0.0",
+"version": "1.0.1",
   "minAppVersion": "0.15.0",
   "description": "Sync your Memos to daily notes automatically or manually.",
   "author": "xmxiong",
