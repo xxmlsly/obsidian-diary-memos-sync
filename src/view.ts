@@ -58,7 +58,7 @@ export class MemosSyncView extends ItemView {
 
     // Auto-sync status
     const autoRow = statusSection.createDiv({ cls: "memos-sync-row" });
-    autoRow.createSpan({ text: "Auto Sync: ", cls: "memos-sync-label" });
+    autoRow.createSpan({ text: "Auto sync: ", cls: "memos-sync-label" });
     this.autoSyncStatusEl = autoRow.createSpan({
       text: this.plugin.settings.autoSync
         ? `ON (every ${this.plugin.settings.syncIntervalMinutes} min)`
@@ -68,7 +68,7 @@ export class MemosSyncView extends ItemView {
 
     // Last sync time
     const lastRow = statusSection.createDiv({ cls: "memos-sync-row" });
-    lastRow.createSpan({ text: "Last Sync: ", cls: "memos-sync-label" });
+    lastRow.createSpan({ text: "Last sync: ", cls: "memos-sync-label" });
     this.lastSyncEl = lastRow.createSpan({
       text: this.plugin.lastSyncTime || "Never",
       cls: "memos-sync-value",
@@ -83,7 +83,7 @@ export class MemosSyncView extends ItemView {
     });
     const syncBtnIcon = syncBtn.createSpan({ cls: "memos-sync-btn-icon" });
     setIcon(syncBtnIcon, "refresh-cw");
-    syncBtn.createSpan({ text: " Sync Now" });
+    syncBtn.createSpan({ text: " Sync now" });
     syncBtn.addEventListener("click", () => {
       syncBtn.disabled = true;
       syncBtn.addClass("memos-sync-btn-loading");
@@ -101,7 +101,7 @@ export class MemosSyncView extends ItemView {
     });
     const testBtnIcon = testBtn.createSpan({ cls: "memos-sync-btn-icon" });
     setIcon(testBtnIcon, "activity");
-    testBtn.createSpan({ text: " Test Connection" });
+    testBtn.createSpan({ text: " Test connection" });
     testBtn.addEventListener("click", () => {
       testBtn.disabled = true;
       void this.plugin.memosApi.testConnectionDetailed().then((result) => {
