@@ -29,8 +29,54 @@ export interface MemoResource {
  */
 interface SafeResponse {
   status: number;
-  body: any;
+  body: SafeResponseBody;
   error?: string;
+}
+
+/**
+ * Response body can be JSON object or text
+ */
+type SafeResponseBody = Record<string, unknown> | string | null;
+
+/**
+ * Raw memo response from Memos API
+ */
+interface RawMemoResponse {
+  uid?: string;
+  name?: string;
+  content?: string;
+  createTime?: string;
+  updateTime?: string;
+  displayTime?: string;
+  tags?: string[];
+  pinned?: boolean;
+  resources?: RawResourceResponse[];
+}
+
+/**
+ * Raw resource response from Memos API
+ */
+interface RawResourceResponse {
+  name?: string;
+  filename?: string;
+  externalLink?: string;
+  type?: string;
+  size?: string;
+}
+
+/**
+ * Memos API list response
+ */
+interface MemosListResponse {
+  memos?: RawMemoResponse[];
+  nextPageToken?: string;
+}
+
+/**
+ * Workspace profile response
+ */
+interface WorkspaceProfileResponse {
+  version?: string;
 }
 
 /**
@@ -80,20 +126,21 @@ export class MemosApi {
 
       const resp = await requestUrl(params);
       // requestUrl succeeded (2xx status)
-      let body: any = null;
+      let body: SafeResponseBody = null;
       try {
-        body = resp.json;
+        body = resp.json as Record<string, unknown>;
       } catch {
         // Response may not be JSON
         body = resp.text;
       }
       return { status: resp.status, body };
-    } catch (e: any) {
+    } catch (e) {
       // Obsidian's requestUrl throws on non-2xx responses
       // Try to extract status code from the error
-      const status = this.extractStatusFromError(e);
-      const errorMsg = e?.message || String(e);
-      console.log(`Memos Sync: Request to ${url} failed - status: ${status}, error: ${errorMsg}`);
+      const errorObj = e as { status?: number; message?: string };
+      const status = this.extractStatusFromError(errorObj);
+      const errorMsg = errorObj?.message || String(e);
+      console.debug(`Memos Sync: Request to ${url} failed - status: ${status}, error: ${errorMsg}`);
       return { status, body: null, error: errorMsg };
     }
   }
@@ -101,11 +148,11 @@ export class MemosApi {
   /**
    * Try to extract HTTP status code from Obsidian requestUrl error
    */
-  private extractStatusFromError(e: any): number {
+  private extractStatusFromError(e: { status?: number; message?: string }): number {
     // Obsidian may set status on the error object
     if (e?.status) return e.status;
     // Some versions include it in the message
-    const msg = e?.message || String(e);
+    const msg = e?.message || "";
     const match = msg.match(/\b(4\d{2}|5\d{2})\b/);
     if (match) return parseInt(match[1], 10);
     // Network error or unknown
@@ -145,7 +192,7 @@ export class MemosApi {
 
     // Step 1: Check if the server is reachable via workspace profile (no auth needed)
     const profileUrl = `${this.baseUrl}/api/v1/workspace/profile`;
-    console.log(`Memos Sync: Testing server reachability at ${profileUrl}`);
+    console.debug(`Memos Sync: Testing server reachability at ${profileUrl}`);
     const profileResult = await this.safeRequest(profileUrl, "GET", false);
 
     if (profileResult.status === 0) {
@@ -160,7 +207,7 @@ export class MemosApi {
       // Maybe not a Memos server, or very old version
       // Try a fallback endpoint
       const fallbackUrl = `${this.baseUrl}/api/v1/memos?pageSize=1`;
-      console.log(`Memos Sync: Profile endpoint not found, trying ${fallbackUrl}`);
+      console.debug(`Memos Sync: Profile endpoint not found, trying ${fallbackUrl}`);
       const fallbackResult = await this.safeRequest(fallbackUrl, "GET", true);
 
       if (fallbackResult.status === 200) {
@@ -187,13 +234,14 @@ export class MemosApi {
     // Profile endpoint returned something (possibly 200, 401, etc.)
     let version = "unknown";
     if (profileResult.status === 200 && profileResult.body) {
-      version = profileResult.body?.version || "unknown";
-      console.log(`Memos Sync: Server version detected: ${version}`);
+      const profileBody = profileResult.body as WorkspaceProfileResponse;
+      version = profileBody?.version || "unknown";
+      console.debug(`Memos Sync: Server version detected: ${version}`);
     }
 
     // Step 2: Verify authentication by fetching memos with token
     const memosUrl = `${this.baseUrl}/api/v1/memos?pageSize=1`;
-    console.log(`Memos Sync: Testing authentication at ${memosUrl}`);
+    console.debug(`Memos Sync: Testing authentication at ${memosUrl}`);
     const memosResult = await this.safeRequest(memosUrl, "GET", true);
 
     if (memosResult.status === 200) {
@@ -240,7 +288,7 @@ export class MemosApi {
         url += `&pageToken=${encodeURIComponent(pageToken)}`;
       }
 
-      console.log(`Memos Sync: Fetching memos from ${url}`);
+      console.debug(`Memos Sync: Fetching memos from ${url}`);
       const result = await this.safeRequest(url);
 
       if (result.status === 401 || result.status === 403) {
@@ -255,12 +303,12 @@ export class MemosApi {
         );
       }
 
-      const data = result.body;
+      const data = result.body as MemosListResponse;
       if (!data) {
         throw new Error("Empty response from Memos API");
       }
 
-      const memos: Memo[] = (data.memos || []).map((m: any) =>
+      const memos: Memo[] = (data.memos || []).map((m) =>
         this.parseMemo(m)
       );
 
@@ -306,7 +354,7 @@ export class MemosApi {
     return allMemos;
   }
 
-  private parseMemo(raw: any): Memo {
+  private parseMemo(raw: RawMemoResponse): Memo {
     return {
       uid: raw.uid || raw.name || "",
       name: raw.name || "",
@@ -316,7 +364,7 @@ export class MemosApi {
       displayTime: raw.displayTime || raw.createTime || "",
       tags: raw.tags || [],
       pinned: raw.pinned || false,
-      resources: (raw.resources || []).map((r: any) => ({
+      resources: (raw.resources || []).map((r) => ({
         name: r.name || "",
         filename: r.filename || "",
         externalLink: r.externalLink || "",

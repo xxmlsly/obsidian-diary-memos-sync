@@ -26,7 +26,7 @@ export class MemosSyncView extends ItemView {
     return "refresh-cw";
   }
 
-  async onOpen() {
+  onOpen(): Promise<void> {
     const container = this.containerEl.children[1];
     container.empty();
     container.addClass("memos-sync-sidebar");
@@ -74,16 +74,15 @@ export class MemosSyncView extends ItemView {
     const syncBtnIcon = syncBtn.createSpan({ cls: "memos-sync-btn-icon" });
     setIcon(syncBtnIcon, "refresh-cw");
     syncBtn.createSpan({ text: " Sync Now" });
-    syncBtn.addEventListener("click", async () => {
+    syncBtn.addEventListener("click", () => {
       syncBtn.disabled = true;
       syncBtn.addClass("memos-sync-btn-loading");
-      try {
-        await this.plugin.syncMemos();
+      this.plugin.syncMemos().then(() => {
         this.updateView();
-      } finally {
+      }).finally(() => {
         syncBtn.disabled = false;
         syncBtn.removeClass("memos-sync-btn-loading");
-      }
+      });
     });
 
     // Test Connection button
@@ -93,10 +92,9 @@ export class MemosSyncView extends ItemView {
     const testBtnIcon = testBtn.createSpan({ cls: "memos-sync-btn-icon" });
     setIcon(testBtnIcon, "activity");
     testBtn.createSpan({ text: " Test Connection" });
-    testBtn.addEventListener("click", async () => {
+    testBtn.addEventListener("click", () => {
       testBtn.disabled = true;
-      try {
-        const result = await this.plugin.memosApi.testConnectionDetailed();
+      this.plugin.memosApi.testConnectionDetailed().then((result) => {
         if (this.statusEl) {
           if (result.ok) {
             this.statusEl.setText("✅ Connected" + (result.version ? ` (${result.version})` : ""));
@@ -109,21 +107,22 @@ export class MemosSyncView extends ItemView {
           }
         }
         // Also show a Notice with full details
-        const { Notice } = await import("obsidian");
-        if (result.ok) {
-          new Notice(`✅ ${result.message}`);
-        } else {
-          new Notice(`❌ ${result.message}`, 10000);
-        }
-      } catch (e: any) {
+        return import("obsidian").then(({ Notice }) => {
+          if (result.ok) {
+            new Notice(`✅ ${result.message}`);
+          } else {
+            new Notice(`❌ ${result.message}`, 10000);
+          }
+        });
+      }).catch((e: Error) => {
         if (this.statusEl) {
           this.statusEl.setText("❌ " + (e?.message || "Unknown error"));
           this.statusEl.toggleClass("memos-sync-success", false);
           this.statusEl.toggleClass("memos-sync-error", true);
         }
-      } finally {
+      }).finally(() => {
         testBtn.disabled = false;
-      }
+      });
     });
 
     // Settings button
@@ -135,7 +134,9 @@ export class MemosSyncView extends ItemView {
     settingsBtn.createSpan({ text: " Settings" });
     settingsBtn.addEventListener("click", () => {
       // Open plugin settings
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (this.app as any).setting.open();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (this.app as any).setting.openTabById("memos-sync");
     });
 
@@ -146,8 +147,7 @@ export class MemosSyncView extends ItemView {
       cls: "memos-sync-info-text",
     });
 
-    // Add styles
-    this.addStyles(container);
+    return Promise.resolve();
   }
 
   updateView() {
@@ -168,112 +168,8 @@ export class MemosSyncView extends ItemView {
     }
   }
 
-  private addStyles(container: Element) {
-    const style = container.createEl("style");
-    style.textContent = `
-      .memos-sync-sidebar {
-        padding: 12px;
-      }
-      .memos-sync-header h4 {
-        margin: 0 0 12px 0;
-        padding-bottom: 8px;
-        border-bottom: 1px solid var(--background-modifier-border);
-      }
-      .memos-sync-status {
-        margin-bottom: 16px;
-        padding: 8px;
-        background: var(--background-secondary);
-        border-radius: 6px;
-      }
-      .memos-sync-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 4px 0;
-        font-size: 12px;
-      }
-      .memos-sync-label {
-        font-weight: 600;
-        color: var(--text-muted);
-      }
-      .memos-sync-value {
-        color: var(--text-normal);
-        max-width: 60%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        text-align: right;
-      }
-      .memos-sync-success {
-        color: var(--text-success) !important;
-      }
-      .memos-sync-error {
-        color: var(--text-error) !important;
-      }
-      .memos-sync-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-bottom: 16px;
-      }
-      .memos-sync-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 8px 12px;
-        border: 1px solid var(--background-modifier-border);
-        border-radius: 6px;
-        background: var(--background-secondary);
-        color: var(--text-normal);
-        cursor: pointer;
-        font-size: 13px;
-        transition: all 0.15s ease;
-      }
-      .memos-sync-btn:hover {
-        background: var(--background-modifier-hover);
-      }
-      .memos-sync-btn-primary {
-        background: var(--interactive-accent);
-        color: var(--text-on-accent);
-        border-color: var(--interactive-accent);
-        font-weight: 600;
-      }
-      .memos-sync-btn-primary:hover {
-        opacity: 0.9;
-      }
-      .memos-sync-btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-      .memos-sync-btn-loading .memos-sync-btn-icon {
-        animation: memos-spin 1s linear infinite;
-      }
-      .memos-sync-btn-icon {
-        display: inline-flex;
-        align-items: center;
-        margin-right: 4px;
-      }
-      .memos-sync-btn-icon svg {
-        width: 14px;
-        height: 14px;
-      }
-      @keyframes memos-spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
-      .memos-sync-info {
-        padding: 8px;
-        border-top: 1px solid var(--background-modifier-border);
-      }
-      .memos-sync-info-text {
-        font-size: 11px;
-        color: var(--text-muted);
-        line-height: 1.5;
-      }
-    `;
-  }
-
-  async onClose() {
+  onClose(): Promise<void> {
     // Cleanup if needed
+    return Promise.resolve();
   }
 }

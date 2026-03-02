@@ -57,8 +57,8 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
   display() {
     const { containerEl } = this;
     containerEl.empty();
-    containerEl.createEl("h2", { text: "Memos Server Configuration" });
-    new import_obsidian.Setting(containerEl).setName("Memos Server URL").setDesc(
+    new import_obsidian.Setting(containerEl).setName("Memos server configuration").setHeading();
+    new import_obsidian.Setting(containerEl).setName("Memos server URL").setDesc(
       "The base URL of your Memos instance (e.g., https://memos.example.com)"
     ).addText(
       (text) => text.setPlaceholder("https://memos.example.com").setValue(this.plugin.settings.memosServerUrl).onChange(async (value) => {
@@ -66,21 +66,21 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Access Token").setDesc("Your Memos API access token for authentication").addText(
+    new import_obsidian.Setting(containerEl).setName("Access token").setDesc("Your Memos API access token for authentication").addText(
       (text) => text.setPlaceholder("Enter your access token").setValue(this.plugin.settings.memosAccessToken).onChange(async (value) => {
         this.plugin.settings.memosAccessToken = value.trim();
         await this.plugin.saveSettings();
       })
     );
-    containerEl.createEl("h2", { text: "Sync Settings" });
-    new import_obsidian.Setting(containerEl).setName("Auto Sync").setDesc("Automatically sync memos at a regular interval").addToggle(
+    new import_obsidian.Setting(containerEl).setName("Sync settings").setHeading();
+    new import_obsidian.Setting(containerEl).setName("Auto sync").setDesc("Automatically sync memos at a regular interval").addToggle(
       (toggle) => toggle.setValue(this.plugin.settings.autoSync).onChange(async (value) => {
         this.plugin.settings.autoSync = value;
         await this.plugin.saveSettings();
         this.plugin.resetAutoSync();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Sync Interval (minutes)").setDesc("How often to auto-sync memos (in minutes)").addText(
+    new import_obsidian.Setting(containerEl).setName("Sync interval (minutes)").setDesc("How often to auto-sync memos (in minutes)").addText(
       (text) => text.setPlaceholder("30").setValue(String(this.plugin.settings.syncIntervalMinutes)).onChange(async (value) => {
         const parsed = parseInt(value, 10);
         if (!isNaN(parsed) && parsed >= 1) {
@@ -90,7 +90,7 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
         }
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Sync Limit").setDesc("Maximum number of memos to fetch per sync").addText(
+    new import_obsidian.Setting(containerEl).setName("Sync limit").setDesc("Maximum number of memos to fetch per sync").addText(
       (text) => text.setPlaceholder("100").setValue(String(this.plugin.settings.syncLimit)).onChange(async (value) => {
         const parsed = parseInt(value, 10);
         if (!isNaN(parsed) && parsed >= 1) {
@@ -99,14 +99,14 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
         }
       })
     );
-    containerEl.createEl("h2", { text: "File & Folder Settings" });
-    new import_obsidian.Setting(containerEl).setName("Daily Notes Folder").setDesc("Folder where daily notes are stored").addText(
+    new import_obsidian.Setting(containerEl).setName("File and folder settings").setHeading();
+    new import_obsidian.Setting(containerEl).setName("Daily notes folder").setDesc("Folder where daily notes are stored").addText(
       (text) => text.setPlaceholder("DailyNotes").setValue(this.plugin.settings.dailyNotesFolder).onChange(async (value) => {
         this.plugin.settings.dailyNotesFolder = value.trim();
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("File Name Format").setDesc(
+    new import_obsidian.Setting(containerEl).setName("File name format").setDesc(
       "Date format for daily note file names (e.g., YYYY-MM-DD, YYYY/MM/YYYY-MM-DD)"
     ).addText(
       (text) => text.setPlaceholder("YYYY-MM-DD").setValue(this.plugin.settings.fileNameFormat).onChange(async (value) => {
@@ -114,20 +114,20 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
-    containerEl.createEl("h2", { text: "Content Formatting" });
-    new import_obsidian.Setting(containerEl).setName("Memos Section Heading").setDesc("The heading text for the memos section in your daily note").addText(
+    new import_obsidian.Setting(containerEl).setName("Content formatting").setHeading();
+    new import_obsidian.Setting(containerEl).setName("Memos section heading").setDesc("The heading text for the memos section in your daily note").addText(
       (text) => text.setPlaceholder("## Memos").setValue(this.plugin.settings.memosHeading).onChange(async (value) => {
         this.plugin.settings.memosHeading = value.trim();
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Insert Position").setDesc("Where to insert the memos section in the daily note").addDropdown(
+    new import_obsidian.Setting(containerEl).setName("Insert position").setDesc("Where to insert the memos section in the daily note").addDropdown(
       (dropdown) => dropdown.addOption("bottom", "Bottom of file").addOption("top", "Top of file").setValue(this.plugin.settings.insertPosition).onChange(async (value) => {
         this.plugin.settings.insertPosition = value;
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Memo Template").setDesc(
+    new import_obsidian.Setting(containerEl).setName("Memo template").setDesc(
       "Template for each memo. Placeholders: {{time}}, {{content}}, {{tags}}, {{uid}}"
     ).addTextArea(
       (text) => text.setPlaceholder("- \u23F0 {{time}} | {{content}}").setValue(this.plugin.settings.memoTemplate).onChange(async (value) => {
@@ -135,20 +135,20 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Time Format").setDesc("Format for memo timestamps (e.g., HH:mm, HH:mm:ss)").addText(
+    new import_obsidian.Setting(containerEl).setName("Time format").setDesc("Format for memo timestamps (e.g., HH:mm, HH:mm:ss)").addText(
       (text) => text.setPlaceholder("HH:mm").setValue(this.plugin.settings.dateTimeFormat).onChange(async (value) => {
         this.plugin.settings.dateTimeFormat = value.trim();
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Tag Prefix").setDesc("Prefix for tags in memos (e.g., # or #memos/)").addText(
+    new import_obsidian.Setting(containerEl).setName("Tag prefix").setDesc("Prefix for tags in memos (e.g., # or #memos/)").addText(
       (text) => text.setPlaceholder("#").setValue(this.plugin.settings.tagPrefix).onChange(async (value) => {
         this.plugin.settings.tagPrefix = value;
         await this.plugin.saveSettings();
       })
     );
-    containerEl.createEl("h2", { text: "Auto Triggers" });
-    new import_obsidian.Setting(containerEl).setName("Sync on Startup").setDesc(
+    new import_obsidian.Setting(containerEl).setName("Auto triggers").setHeading();
+    new import_obsidian.Setting(containerEl).setName("Sync on startup").setDesc(
       "Automatically sync once after Obsidian starts. Changes take effect on next launch."
     ).addDropdown(
       (dropdown) => dropdown.addOption("off", "Off").addOption("1", "After 1 second").addOption("10", "After 10 seconds").addOption("30", "After 30 seconds").setValue(this.plugin.settings.syncOnStartup).onChange(async (value) => {
@@ -156,7 +156,7 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Sync on Daily Note Open").setDesc(
+    new import_obsidian.Setting(containerEl).setName("Sync on daily note open").setDesc(
       "When you open a daily note within the lookback range, automatically sync the latest memos for that date."
     ).addToggle(
       (toggle) => toggle.setValue(this.plugin.settings.syncOnFileOpen).onChange(async (value) => {
@@ -165,8 +165,8 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
         this.plugin.resetFileOpenSync();
       })
     );
-    containerEl.createEl("h2", { text: "Filter" });
-    new import_obsidian.Setting(containerEl).setName("Sync Lookback Days").setDesc(
+    new import_obsidian.Setting(containerEl).setName("Filter").setHeading();
+    new import_obsidian.Setting(containerEl).setName("Sync lookback days").setDesc(
       "How many past days to sync in addition to today (0 = today only, 3 = today + past 3 days). Useful for catching edits to older memos."
     ).addText(
       (text) => text.setPlaceholder("3").setValue(String(this.plugin.settings.syncLookbackDays)).onChange(async (value) => {
@@ -177,14 +177,14 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
         }
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Filter by Tag").setDesc("Only sync memos that contain this tag (leave empty to sync all)").addText(
+    new import_obsidian.Setting(containerEl).setName("Filter by tag").setDesc("Only sync memos that contain this tag (leave empty to sync all)").addText(
       (text) => text.setPlaceholder("").setValue(this.plugin.settings.filterTag).onChange(async (value) => {
         this.plugin.settings.filterTag = value.trim();
         await this.plugin.saveSettings();
       })
     );
-    containerEl.createEl("h2", { text: "Actions" });
-    new import_obsidian.Setting(containerEl).setName("Test Connection").setDesc("Test the connection to your Memos server").addButton(
+    new import_obsidian.Setting(containerEl).setName("Actions").setHeading();
+    new import_obsidian.Setting(containerEl).setName("Test connection").setDesc("Test the connection to your Memos server").addButton(
       (button) => button.setButtonText("Test").onClick(async () => {
         button.setButtonText("Testing...");
         button.setDisabled(true);
@@ -203,7 +203,7 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
         }
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Sync Now").setDesc("Manually trigger a sync right now").addButton(
+    new import_obsidian.Setting(containerEl).setName("Sync now").setDesc("Manually trigger a sync right now").addButton(
       (button) => button.setButtonText("Sync Now").onClick(async () => {
         await this.plugin.syncMemos();
       })
@@ -253,9 +253,10 @@ var MemosApi = class {
       }
       return { status: resp.status, body };
     } catch (e) {
-      const status = this.extractStatusFromError(e);
-      const errorMsg = (e == null ? void 0 : e.message) || String(e);
-      console.log(`Memos Sync: Request to ${url} failed - status: ${status}, error: ${errorMsg}`);
+      const errorObj = e;
+      const status = this.extractStatusFromError(errorObj);
+      const errorMsg = (errorObj == null ? void 0 : errorObj.message) || String(e);
+      console.debug(`Memos Sync: Request to ${url} failed - status: ${status}, error: ${errorMsg}`);
       return { status, body: null, error: errorMsg };
     }
   }
@@ -265,7 +266,7 @@ var MemosApi = class {
   extractStatusFromError(e) {
     if (e == null ? void 0 : e.status)
       return e.status;
-    const msg = (e == null ? void 0 : e.message) || String(e);
+    const msg = (e == null ? void 0 : e.message) || "";
     const match = msg.match(/\b(4\d{2}|5\d{2})\b/);
     if (match)
       return parseInt(match[1], 10);
@@ -290,7 +291,6 @@ var MemosApi = class {
    * Step 2: Hit /api/v1/memos?pageSize=1 (with auth) to verify token works
    */
   async testConnectionDetailed() {
-    var _a;
     if (!this.settings.memosServerUrl) {
       return { ok: false, message: "Server URL is not configured." };
     }
@@ -298,7 +298,7 @@ var MemosApi = class {
       return { ok: false, message: "Access token is not configured." };
     }
     const profileUrl = `${this.baseUrl}/api/v1/workspace/profile`;
-    console.log(`Memos Sync: Testing server reachability at ${profileUrl}`);
+    console.debug(`Memos Sync: Testing server reachability at ${profileUrl}`);
     const profileResult = await this.safeRequest(profileUrl, "GET", false);
     if (profileResult.status === 0) {
       return {
@@ -315,7 +315,7 @@ Error: ${profileResult.error || "Network error"}`
     }
     if (profileResult.status === 404) {
       const fallbackUrl = `${this.baseUrl}/api/v1/memos?pageSize=1`;
-      console.log(`Memos Sync: Profile endpoint not found, trying ${fallbackUrl}`);
+      console.debug(`Memos Sync: Profile endpoint not found, trying ${fallbackUrl}`);
       const fallbackResult = await this.safeRequest(fallbackUrl, "GET", true);
       if (fallbackResult.status === 200) {
         return {
@@ -346,11 +346,12 @@ Please verify the URL is correct.`
     }
     let version = "unknown";
     if (profileResult.status === 200 && profileResult.body) {
-      version = ((_a = profileResult.body) == null ? void 0 : _a.version) || "unknown";
-      console.log(`Memos Sync: Server version detected: ${version}`);
+      const profileBody = profileResult.body;
+      version = (profileBody == null ? void 0 : profileBody.version) || "unknown";
+      console.debug(`Memos Sync: Server version detected: ${version}`);
     }
     const memosUrl = `${this.baseUrl}/api/v1/memos?pageSize=1`;
-    console.log(`Memos Sync: Testing authentication at ${memosUrl}`);
+    console.debug(`Memos Sync: Testing authentication at ${memosUrl}`);
     const memosResult = await this.safeRequest(memosUrl, "GET", true);
     if (memosResult.status === 200) {
       const versionDisplay = version !== "unknown" ? ` (version: ${version})` : "";
@@ -397,7 +398,7 @@ Please check your Memos version is v0.22+ and the token has proper permissions.`
       if (pageToken) {
         url += `&pageToken=${encodeURIComponent(pageToken)}`;
       }
-      console.log(`Memos Sync: Fetching memos from ${url}`);
+      console.debug(`Memos Sync: Fetching memos from ${url}`);
       const result = await this.safeRequest(url);
       if (result.status === 401 || result.status === 403) {
         throw new Error(
@@ -675,13 +676,13 @@ function mergeMemosIntoNote(existingContent, memosSection, settings) {
       const newMemosBody = newMemosLines.slice(newBodyStart, newBodyEnd);
       const existingBlocks = parseSectionBlocks(existingSectionBody);
       const newBlocks = parseSectionBlocks(newMemosBody);
-      console.log(`Memos Sync: [merge] existingSectionBody lines: ${existingSectionBody.length}`);
+      console.debug(`Memos Sync: [merge] existingSectionBody lines: ${existingSectionBody.length}`);
       for (const b of existingBlocks) {
-        console.log(`Memos Sync: [merge] existing block: type=${b.type}, uid=${b.uid || "N/A"}, lines=${b.lines.length}, firstLine="${(_a = b.lines[0]) == null ? void 0 : _a.substring(0, 80)}"`);
+        console.debug(`Memos Sync: [merge] existing block: type=${b.type}, uid=${b.uid || "N/A"}, lines=${b.lines.length}, firstLine="${(_a = b.lines[0]) == null ? void 0 : _a.substring(0, 80)}"`);
       }
-      console.log(`Memos Sync: [merge] newMemosBody lines: ${newMemosBody.length}`);
+      console.debug(`Memos Sync: [merge] newMemosBody lines: ${newMemosBody.length}`);
       for (const b of newBlocks) {
-        console.log(`Memos Sync: [merge] new block: type=${b.type}, uid=${b.uid || "N/A"}, lines=${b.lines.length}, firstLine="${(_b = b.lines[0]) == null ? void 0 : _b.substring(0, 80)}"`);
+        console.debug(`Memos Sync: [merge] new block: type=${b.type}, uid=${b.uid || "N/A"}, lines=${b.lines.length}, firstLine="${(_b = b.lines[0]) == null ? void 0 : _b.substring(0, 80)}"`);
       }
       const newMemoMap = /* @__PURE__ */ new Map();
       const newMemoOrder = [];
@@ -698,9 +699,9 @@ function mergeMemosIntoNote(existingContent, memosSection, settings) {
         }
       }
       const newUids = newMemoOrder.filter((uid) => !existingMemoUids.has(uid));
-      console.log(`Memos Sync: [merge] existingMemoUids: [${[...existingMemoUids].join(", ")}]`);
-      console.log(`Memos Sync: [merge] newMemoOrder (from API): [${newMemoOrder.join(", ")}]`);
-      console.log(`Memos Sync: [merge] newUids (to insert): [${newUids.join(", ")}]`);
+      console.debug(`Memos Sync: [merge] existingMemoUids: [${[...existingMemoUids].join(", ")}]`);
+      console.debug(`Memos Sync: [merge] newMemoOrder (from API): [${newMemoOrder.join(", ")}]`);
+      console.debug(`Memos Sync: [merge] newUids (to insert): [${newUids.join(", ")}]`);
       const insertBeforeMap = /* @__PURE__ */ new Map();
       const appendAtEnd = [];
       for (const newUid of newUids) {
@@ -745,11 +746,11 @@ function mergeMemosIntoNote(existingContent, memosSection, settings) {
             const oldContent = oldTrimmedLines.join("\n");
             const newContent2 = newTrimmedLines.join("\n");
             if (oldContent !== newContent2) {
-              console.log(`Memos Sync: [merge] UPDATING memo uid=${block.uid}`);
-              console.log(`Memos Sync: [merge]   OLD: "${oldContent.substring(0, 100)}"`);
-              console.log(`Memos Sync: [merge]   NEW: "${newContent2.substring(0, 100)}"`);
+              console.debug(`Memos Sync: [merge] UPDATING memo uid=${block.uid}`);
+              console.debug(`Memos Sync: [merge]   OLD: "${oldContent.substring(0, 100)}"`);
+              console.debug(`Memos Sync: [merge]   NEW: "${newContent2.substring(0, 100)}"`);
             } else {
-              console.log(`Memos Sync: [merge] memo uid=${block.uid} unchanged`);
+              console.debug(`Memos Sync: [merge] memo uid=${block.uid} unchanged`);
             }
             mergedLines.push(...updated.lines);
           }
@@ -805,22 +806,22 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
   async onload() {
     await this.loadSettings();
     this.memosApi = new MemosApi(this.settings);
-    this.addRibbonIcon("refresh-cw", "Diary Memos Sync", async () => {
-      await this.syncMemos();
+    this.addRibbonIcon("refresh-cw", "Diary Memos Sync", () => {
+      this.syncMemos();
     });
     this.addCommand({
       id: "sync-memos-now",
       name: "Sync Memos Now",
-      callback: async () => {
-        await this.syncMemos();
+      callback: () => {
+        this.syncMemos();
       }
     });
     this.addCommand({
       id: "toggle-auto-sync",
       name: "Toggle Auto Sync",
-      callback: async () => {
+      callback: () => {
         this.settings.autoSync = !this.settings.autoSync;
-        await this.saveSettings();
+        this.saveSettings();
         this.resetAutoSync();
         new import_obsidian3.Notice(
           `Memos auto-sync ${this.settings.autoSync ? "enabled" : "disabled"}`
@@ -834,7 +835,7 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
       this.setupFileOpenSync();
     });
   }
-  async onunload() {
+  onunload() {
     this.clearAutoSync();
     this.clearStartupSync();
   }
@@ -870,9 +871,9 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
       }
       for (const { dateStr, date } of datesToSync) {
         const memos = await this.memosApi.fetchMemosByDate(dateStr);
-        console.log(`Memos Sync: [syncMemos] Date ${dateStr}: fetched ${memos.length} memo(s)`);
+        console.debug(`Memos Sync: [syncMemos] Date ${dateStr}: fetched ${memos.length} memo(s)`);
         for (const m of memos) {
-          console.log(`Memos Sync: [syncMemos]   uid=${m.uid}, updateTime=${m.updateTime}, content="${m.content.substring(0, 50)}"`);
+          console.debug(`Memos Sync: [syncMemos]   uid=${m.uid}, updateTime=${m.updateTime}, content="${m.content.substring(0, 50)}"`);
         }
         if (memos.length === 0) {
           continue;
@@ -892,7 +893,7 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
           this.settings
         );
         if (updatedContent !== noteContent) {
-          console.log(`Memos Sync: [syncMemos] Content changed for ${dateStr}, writing file.`);
+          console.debug(`Memos Sync: [syncMemos] Content changed for ${dateStr}, writing file.`);
           if (existingFile && existingFile instanceof import_obsidian3.TFile) {
             await this.app.vault.modify(existingFile, updatedContent);
           } else {
@@ -900,12 +901,12 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
           }
           daysUpdated++;
         } else {
-          console.log(`Memos Sync: [syncMemos] Content UNCHANGED for ${dateStr}, skipping write.`);
+          console.debug(`Memos Sync: [syncMemos] Content UNCHANGED for ${dateStr}, skipping write.`);
         }
         totalSynced += memos.length;
       }
       this.updateLastSyncTime();
-      console.log(
+      console.debug(
         `Memos Sync: Synced ${totalSynced} memo(s) across ${daysUpdated} day(s)`
       );
     } catch (error) {
@@ -943,9 +944,9 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
     this.clearAutoSync();
     if (this.settings.autoSync && this.settings.syncIntervalMinutes > 0) {
       const intervalMs = this.settings.syncIntervalMinutes * 60 * 1e3;
-      this.syncInterval = window.setInterval(async () => {
-        console.log("Memos Sync: Auto-sync triggered");
-        await this.syncMemos();
+      this.syncInterval = window.setInterval(() => {
+        console.debug("Memos Sync: Auto-sync triggered");
+        this.syncMemos();
       }, intervalMs);
       this.registerInterval(this.syncInterval);
     }
@@ -970,9 +971,9 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
     const delaySeconds = parseInt(delaySetting, 10);
     if (isNaN(delaySeconds) || delaySeconds < 1)
       return;
-    this.startupTimeout = window.setTimeout(async () => {
-      console.log(`Memos Sync: Startup sync triggered after ${delaySeconds}s`);
-      await this.syncMemos();
+    this.startupTimeout = window.setTimeout(() => {
+      console.debug(`Memos Sync: Startup sync triggered after ${delaySeconds}s`);
+      this.syncMemos();
     }, delaySeconds * 1e3);
     this.registerInterval(this.startupTimeout);
   }
@@ -994,9 +995,9 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
     this.fileOpenRegistered = true;
     const DEBOUNCE_MS = 1e4;
     this.registerEvent(
-      this.app.workspace.on("file-open", async (file) => {
+      this.app.workspace.on("file-open", (file) => {
         var _a;
-        console.log(`Memos Sync: [file-open] event fired, file=${(_a = file == null ? void 0 : file.path) != null ? _a : "null"}, syncOnFileOpen=${this.settings.syncOnFileOpen}`);
+        console.debug(`Memos Sync: [file-open] event fired, file=${(_a = file == null ? void 0 : file.path) != null ? _a : "null"}, syncOnFileOpen=${this.settings.syncOnFileOpen}`);
         if (!this.settings.syncOnFileOpen)
           return;
         if (!file || !(file instanceof import_obsidian3.TFile))
@@ -1013,27 +1014,27 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
         const fileDate = new Date(dateStr + "T00:00:00");
         const diffDays = Math.floor((today.getTime() - fileDate.getTime()) / (1e3 * 60 * 60 * 24));
         if (diffDays < 0 || diffDays > lookbackDays) {
-          console.log(`Memos Sync: [file-open] Date ${dateStr} is outside lookback range (${diffDays} days ago, max ${lookbackDays}), skipping.`);
+          console.debug(`Memos Sync: [file-open] Date ${dateStr} is outside lookback range (${diffDays} days ago, max ${lookbackDays}), skipping.`);
           return;
         }
         const lastSync = this.recentlySynced.get(dateStr);
         if (lastSync && Date.now() - lastSync < DEBOUNCE_MS) {
-          console.log(`Memos Sync: [file-open] Date ${dateStr} was recently synced, debouncing.`);
+          console.debug(`Memos Sync: [file-open] Date ${dateStr} was recently synced, debouncing.`);
           return;
         }
         this.recentlySynced.set(dateStr, Date.now());
-        console.log(`Memos Sync: [file-open] Sync triggered for ${dateStr} (file: ${file.path})`);
-        await this.syncSingleDate(dateStr, fileDate);
+        console.debug(`Memos Sync: [file-open] Sync triggered for ${dateStr} (file: ${file.path})`);
+        this.syncSingleDate(dateStr, fileDate);
       })
     );
-    console.log("Memos Sync: File-open sync listener registered.");
+    console.debug("Memos Sync: File-open sync listener registered.");
   }
   /**
    * Called from settings toggle — no need to re-register, just log the change
    */
   resetFileOpenSync() {
     this.setupFileOpenSync();
-    console.log(`Memos Sync: syncOnFileOpen is now ${this.settings.syncOnFileOpen ? "enabled" : "disabled"}`);
+    console.debug(`Memos Sync: syncOnFileOpen is now ${this.settings.syncOnFileOpen ? "enabled" : "disabled"}`);
   }
   /**
    * Extract date string from a daily note file path.
@@ -1044,28 +1045,28 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
     const folder = this.settings.dailyNotesFolder.replace(/^\/*|\/*$/g, "");
     const filePath = file.path;
     const fmt = this.settings.fileNameFormat || "YYYY-MM-DD";
-    console.log(`Memos Sync: [extractDate] filePath="${filePath}", folder="${folder}", fileNameFormat="${fmt}"`);
+    console.debug(`Memos Sync: [extractDate] filePath="${filePath}", folder="${folder}", fileNameFormat="${fmt}"`);
     if (folder) {
       const normalizedPath = filePath.toLowerCase();
       const normalizedFolder = folder.toLowerCase();
       if (!normalizedPath.startsWith(normalizedFolder + "/")) {
-        console.log(`Memos Sync: [extractDate] Path does not start with folder "${folder}/", skipping.`);
+        console.debug(`Memos Sync: [extractDate] Path does not start with folder "${folder}/", skipping.`);
         return null;
       }
     }
     const relativePath = folder ? filePath.slice(folder.length + 1) : filePath;
     const pathWithoutExt = relativePath.replace(/\.md$/i, "");
-    console.log(`Memos Sync: [extractDate] pathWithoutExt="${pathWithoutExt}"`);
+    console.debug(`Memos Sync: [extractDate] pathWithoutExt="${pathWithoutExt}"`);
     const dateStr = this.parseDateFromFormat(pathWithoutExt, fmt);
     if (dateStr) {
-      console.log(`Memos Sync: [extractDate] Parsed date ${dateStr} using format "${fmt}"`);
+      console.debug(`Memos Sync: [extractDate] Parsed date ${dateStr} using format "${fmt}"`);
       return dateStr;
     }
     const dashMatch = filePath.match(/(\d{4})-(\d{2})-(\d{2})/);
     if (dashMatch) {
       const d = `${dashMatch[1]}-${dashMatch[2]}-${dashMatch[3]}`;
       if (!isNaN(new Date(d + "T00:00:00").getTime())) {
-        console.log(`Memos Sync: [extractDate] Fallback matched YYYY-MM-DD: ${d}`);
+        console.debug(`Memos Sync: [extractDate] Fallback matched YYYY-MM-DD: ${d}`);
         return d;
       }
     }
@@ -1073,11 +1074,11 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
     if (compactMatch) {
       const d = `${compactMatch[1]}-${compactMatch[2]}-${compactMatch[3]}`;
       if (!isNaN(new Date(d + "T00:00:00").getTime())) {
-        console.log(`Memos Sync: [extractDate] Fallback matched YYYYMMDD: ${d}`);
+        console.debug(`Memos Sync: [extractDate] Fallback matched YYYYMMDD: ${d}`);
         return d;
       }
     }
-    console.log(`Memos Sync: [extractDate] No date found in "${filePath}"`);
+    console.debug(`Memos Sync: [extractDate] No date found in "${filePath}"`);
     return null;
   }
   /**
@@ -1106,7 +1107,7 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
     const regex = new RegExp("^" + regexStr + "$");
     const match = input.match(regex);
     if (!match) {
-      console.log(`Memos Sync: [parseDateFromFormat] No match. input="${input}", regex=${regex}`);
+      console.debug(`Memos Sync: [parseDateFromFormat] No match. input="${input}", regex=${regex}`);
       return null;
     }
     let year = "", month = "", day = "";
@@ -1125,13 +1126,13 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
       }
     }
     if (!year || !month || !day) {
-      console.log(`Memos Sync: [parseDateFromFormat] Missing date parts: year=${year}, month=${month}, day=${day}`);
+      console.debug(`Memos Sync: [parseDateFromFormat] Missing date parts: year=${year}, month=${month}, day=${day}`);
       return null;
     }
     const dateStr = `${year}-${month}-${day}`;
     const parsed = new Date(dateStr + "T00:00:00");
     if (isNaN(parsed.getTime())) {
-      console.log(`Memos Sync: [parseDateFromFormat] Invalid date: ${dateStr}`);
+      console.debug(`Memos Sync: [parseDateFromFormat] Invalid date: ${dateStr}`);
       return null;
     }
     return dateStr;
@@ -1167,7 +1168,7 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
         } else {
           await this.app.vault.create(notePath, updatedContent);
         }
-        console.log(`Memos Sync: Updated memos for ${dateStr}`);
+        console.debug(`Memos Sync: Updated memos for ${dateStr}`);
       }
       this.updateLastSyncTime();
     } catch (error) {

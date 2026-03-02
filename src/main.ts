@@ -2,8 +2,6 @@ import {
   Plugin,
   Notice,
   TFile,
-  TFolder,
-  addIcon,
 } from "obsidian";
 import {
   MemosSyncSettings,
@@ -12,7 +10,6 @@ import {
 } from "./settings";
 import { MemosApi } from "./api";
 import {
-  getTodayDateStr,
   getDailyNotePath,
   buildMemosSection,
   mergeMemosIntoNote,
@@ -33,25 +30,25 @@ export default class MemosSyncPlugin extends Plugin {
     this.memosApi = new MemosApi(this.settings);
 
     // Add ribbon icon
-    this.addRibbonIcon("refresh-cw", "Diary Memos Sync", async () => {
-      await this.syncMemos();
+    this.addRibbonIcon("refresh-cw", "Diary Memos Sync", () => {
+      this.syncMemos();
     });
 
     // Add commands
     this.addCommand({
       id: "sync-memos-now",
       name: "Sync Memos Now",
-      callback: async () => {
-        await this.syncMemos();
+      callback: () => {
+        this.syncMemos();
       },
     });
 
     this.addCommand({
       id: "toggle-auto-sync",
       name: "Toggle Auto Sync",
-      callback: async () => {
+      callback: () => {
         this.settings.autoSync = !this.settings.autoSync;
-        await this.saveSettings();
+        this.saveSettings();
         this.resetAutoSync();
         new Notice(
           `Memos auto-sync ${this.settings.autoSync ? "enabled" : "disabled"}`
@@ -74,7 +71,7 @@ export default class MemosSyncPlugin extends Plugin {
     });
   }
 
-  async onunload() {
+  onunload() {
     this.clearAutoSync();
     this.clearStartupSync();
   }
@@ -119,9 +116,9 @@ export default class MemosSyncPlugin extends Plugin {
 
       for (const { dateStr, date } of datesToSync) {
         const memos = await this.memosApi.fetchMemosByDate(dateStr);
-        console.log(`Memos Sync: [syncMemos] Date ${dateStr}: fetched ${memos.length} memo(s)`);
+        console.debug(`Memos Sync: [syncMemos] Date ${dateStr}: fetched ${memos.length} memo(s)`);
         for (const m of memos) {
-          console.log(`Memos Sync: [syncMemos]   uid=${m.uid}, updateTime=${m.updateTime}, content="${m.content.substring(0, 50)}"`);
+          console.debug(`Memos Sync: [syncMemos]   uid=${m.uid}, updateTime=${m.updateTime}, content="${m.content.substring(0, 50)}"`);
         }
 
         if (memos.length === 0) {
@@ -153,7 +150,7 @@ export default class MemosSyncPlugin extends Plugin {
 
         // Only write if content actually changed
         if (updatedContent !== noteContent) {
-          console.log(`Memos Sync: [syncMemos] Content changed for ${dateStr}, writing file.`);
+          console.debug(`Memos Sync: [syncMemos] Content changed for ${dateStr}, writing file.`);
           if (existingFile && existingFile instanceof TFile) {
             await this.app.vault.modify(existingFile, updatedContent);
           } else {
@@ -161,7 +158,7 @@ export default class MemosSyncPlugin extends Plugin {
           }
           daysUpdated++;
         } else {
-          console.log(`Memos Sync: [syncMemos] Content UNCHANGED for ${dateStr}, skipping write.`);
+          console.debug(`Memos Sync: [syncMemos] Content UNCHANGED for ${dateStr}, skipping write.`);
         }
 
         totalSynced += memos.length;
@@ -169,7 +166,7 @@ export default class MemosSyncPlugin extends Plugin {
 
       this.updateLastSyncTime();
 
-      console.log(
+      console.debug(
         `Memos Sync: Synced ${totalSynced} memo(s) across ${daysUpdated} day(s)`
       );
     } catch (error) {
@@ -212,9 +209,9 @@ export default class MemosSyncPlugin extends Plugin {
 
     if (this.settings.autoSync && this.settings.syncIntervalMinutes > 0) {
       const intervalMs = this.settings.syncIntervalMinutes * 60 * 1000;
-      this.syncInterval = window.setInterval(async () => {
-        console.log("Memos Sync: Auto-sync triggered");
-        await this.syncMemos();
+      this.syncInterval = window.setInterval(() => {
+        console.debug("Memos Sync: Auto-sync triggered");
+        this.syncMemos();
       }, intervalMs);
 
       // Register the interval so Obsidian cleans it up
@@ -244,9 +241,9 @@ export default class MemosSyncPlugin extends Plugin {
     const delaySeconds = parseInt(delaySetting, 10);
     if (isNaN(delaySeconds) || delaySeconds < 1) return;
 
-    this.startupTimeout = window.setTimeout(async () => {
-      console.log(`Memos Sync: Startup sync triggered after ${delaySeconds}s`);
-      await this.syncMemos();
+    this.startupTimeout = window.setTimeout(() => {
+      console.debug(`Memos Sync: Startup sync triggered after ${delaySeconds}s`);
+      this.syncMemos();
     }, delaySeconds * 1000);
 
     // Register so Obsidian cleans it up
@@ -273,8 +270,8 @@ export default class MemosSyncPlugin extends Plugin {
     const DEBOUNCE_MS = 10000; // 10 seconds debounce per date
 
     this.registerEvent(
-      this.app.workspace.on("file-open", async (file) => {
-        console.log(`Memos Sync: [file-open] event fired, file=${file?.path ?? "null"}, syncOnFileOpen=${this.settings.syncOnFileOpen}`);
+      this.app.workspace.on("file-open", (file) => {
+        console.debug(`Memos Sync: [file-open] event fired, file=${file?.path ?? "null"}, syncOnFileOpen=${this.settings.syncOnFileOpen}`);
 
         // Check the toggle inside the callback so it responds to setting changes immediately
         if (!this.settings.syncOnFileOpen) return;
@@ -296,24 +293,24 @@ export default class MemosSyncPlugin extends Plugin {
         const diffDays = Math.floor((today.getTime() - fileDate.getTime()) / (1000 * 60 * 60 * 24));
 
         if (diffDays < 0 || diffDays > lookbackDays) {
-          console.log(`Memos Sync: [file-open] Date ${dateStr} is outside lookback range (${diffDays} days ago, max ${lookbackDays}), skipping.`);
+          console.debug(`Memos Sync: [file-open] Date ${dateStr} is outside lookback range (${diffDays} days ago, max ${lookbackDays}), skipping.`);
           return;
         }
 
         // Debounce: skip if we recently synced this date
         const lastSync = this.recentlySynced.get(dateStr);
         if (lastSync && (Date.now() - lastSync) < DEBOUNCE_MS) {
-          console.log(`Memos Sync: [file-open] Date ${dateStr} was recently synced, debouncing.`);
+          console.debug(`Memos Sync: [file-open] Date ${dateStr} was recently synced, debouncing.`);
           return;
         }
 
         this.recentlySynced.set(dateStr, Date.now());
-        console.log(`Memos Sync: [file-open] Sync triggered for ${dateStr} (file: ${file.path})`);
-        await this.syncSingleDate(dateStr, fileDate);
+        console.debug(`Memos Sync: [file-open] Sync triggered for ${dateStr} (file: ${file.path})`);
+        this.syncSingleDate(dateStr, fileDate);
       })
     );
 
-    console.log("Memos Sync: File-open sync listener registered.");
+    console.debug("Memos Sync: File-open sync listener registered.");
   }
 
   /**
@@ -322,7 +319,7 @@ export default class MemosSyncPlugin extends Plugin {
   resetFileOpenSync() {
     // Ensure listener is registered (no-op if already registered)
     this.setupFileOpenSync();
-    console.log(`Memos Sync: syncOnFileOpen is now ${this.settings.syncOnFileOpen ? "enabled" : "disabled"}`);
+    console.debug(`Memos Sync: syncOnFileOpen is now ${this.settings.syncOnFileOpen ? "enabled" : "disabled"}`);
   }
 
   /**
@@ -335,14 +332,14 @@ export default class MemosSyncPlugin extends Plugin {
     const filePath = file.path;
     const fmt = this.settings.fileNameFormat || "YYYY-MM-DD";
 
-    console.log(`Memos Sync: [extractDate] filePath="${filePath}", folder="${folder}", fileNameFormat="${fmt}"`);
+    console.debug(`Memos Sync: [extractDate] filePath="${filePath}", folder="${folder}", fileNameFormat="${fmt}"`);
 
     // Check if the file is inside the daily notes folder
     if (folder) {
       const normalizedPath = filePath.toLowerCase();
       const normalizedFolder = folder.toLowerCase();
       if (!normalizedPath.startsWith(normalizedFolder + "/")) {
-        console.log(`Memos Sync: [extractDate] Path does not start with folder "${folder}/", skipping.`);
+        console.debug(`Memos Sync: [extractDate] Path does not start with folder "${folder}/", skipping.`);
         return null;
       }
     }
@@ -352,13 +349,13 @@ export default class MemosSyncPlugin extends Plugin {
     // Remove .md extension
     const pathWithoutExt = relativePath.replace(/\.md$/i, "");
 
-    console.log(`Memos Sync: [extractDate] pathWithoutExt="${pathWithoutExt}"`);
+    console.debug(`Memos Sync: [extractDate] pathWithoutExt="${pathWithoutExt}"`);
 
     // Build a regex from the fileNameFormat to extract YYYY, MM, DD parts
     // The format can contain path separators like "YYYY/MM/YYYY-MM-DD"
     const dateStr = this.parseDateFromFormat(pathWithoutExt, fmt);
     if (dateStr) {
-      console.log(`Memos Sync: [extractDate] Parsed date ${dateStr} using format "${fmt}"`);
+      console.debug(`Memos Sync: [extractDate] Parsed date ${dateStr} using format "${fmt}"`);
       return dateStr;
     }
 
@@ -368,7 +365,7 @@ export default class MemosSyncPlugin extends Plugin {
     if (dashMatch) {
       const d = `${dashMatch[1]}-${dashMatch[2]}-${dashMatch[3]}`;
       if (!isNaN(new Date(d + "T00:00:00").getTime())) {
-        console.log(`Memos Sync: [extractDate] Fallback matched YYYY-MM-DD: ${d}`);
+        console.debug(`Memos Sync: [extractDate] Fallback matched YYYY-MM-DD: ${d}`);
         return d;
       }
     }
@@ -377,12 +374,12 @@ export default class MemosSyncPlugin extends Plugin {
     if (compactMatch) {
       const d = `${compactMatch[1]}-${compactMatch[2]}-${compactMatch[3]}`;
       if (!isNaN(new Date(d + "T00:00:00").getTime())) {
-        console.log(`Memos Sync: [extractDate] Fallback matched YYYYMMDD: ${d}`);
+        console.debug(`Memos Sync: [extractDate] Fallback matched YYYYMMDD: ${d}`);
         return d;
       }
     }
 
-    console.log(`Memos Sync: [extractDate] No date found in "${filePath}"`);
+    console.debug(`Memos Sync: [extractDate] No date found in "${filePath}"`);
     return null;
   }
 
@@ -419,7 +416,7 @@ export default class MemosSyncPlugin extends Plugin {
     const match = input.match(regex);
 
     if (!match) {
-      console.log(`Memos Sync: [parseDateFromFormat] No match. input="${input}", regex=${regex}`);
+      console.debug(`Memos Sync: [parseDateFromFormat] No match. input="${input}", regex=${regex}`);
       return null;
     }
 
@@ -435,14 +432,14 @@ export default class MemosSyncPlugin extends Plugin {
     }
 
     if (!year || !month || !day) {
-      console.log(`Memos Sync: [parseDateFromFormat] Missing date parts: year=${year}, month=${month}, day=${day}`);
+      console.debug(`Memos Sync: [parseDateFromFormat] Missing date parts: year=${year}, month=${month}, day=${day}`);
       return null;
     }
 
     const dateStr = `${year}-${month}-${day}`;
     const parsed = new Date(dateStr + "T00:00:00");
     if (isNaN(parsed.getTime())) {
-      console.log(`Memos Sync: [parseDateFromFormat] Invalid date: ${dateStr}`);
+      console.debug(`Memos Sync: [parseDateFromFormat] Invalid date: ${dateStr}`);
       return null;
     }
 
@@ -486,7 +483,7 @@ export default class MemosSyncPlugin extends Plugin {
         } else {
           await this.app.vault.create(notePath, updatedContent);
         }
-        console.log(`Memos Sync: Updated memos for ${dateStr}`);
+        console.debug(`Memos Sync: Updated memos for ${dateStr}`);
       }
 
       this.updateLastSyncTime();

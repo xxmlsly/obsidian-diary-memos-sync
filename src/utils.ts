@@ -38,14 +38,6 @@ export function getDailyNotePath(
 }
 
 /**
- * Get today's date string in YYYY-MM-DD format
- */
-export function getTodayDateStr(): string {
-  const now = new Date();
-  return formatDate(now, "YYYY-MM-DD");
-}
-
-/**
  * UID marker prefix used to identify memo blocks in the note
  */
 const MEMO_UID_PREFIX = '<span class="memo-uid" data-uid="';
@@ -358,13 +350,13 @@ export function mergeMemosIntoNote(
       const newBlocks = parseSectionBlocks(newMemosBody);
 
       // Debug: log parsed blocks
-      console.log(`Memos Sync: [merge] existingSectionBody lines: ${existingSectionBody.length}`);
+      console.debug(`Memos Sync: [merge] existingSectionBody lines: ${existingSectionBody.length}`);
       for (const b of existingBlocks) {
-        console.log(`Memos Sync: [merge] existing block: type=${b.type}, uid=${b.uid || 'N/A'}, lines=${b.lines.length}, firstLine="${b.lines[0]?.substring(0, 80)}"`);
+        console.debug(`Memos Sync: [merge] existing block: type=${b.type}, uid=${b.uid || 'N/A'}, lines=${b.lines.length}, firstLine="${b.lines[0]?.substring(0, 80)}"`);
       }
-      console.log(`Memos Sync: [merge] newMemosBody lines: ${newMemosBody.length}`);
+      console.debug(`Memos Sync: [merge] newMemosBody lines: ${newMemosBody.length}`);
       for (const b of newBlocks) {
-        console.log(`Memos Sync: [merge] new block: type=${b.type}, uid=${b.uid || 'N/A'}, lines=${b.lines.length}, firstLine="${b.lines[0]?.substring(0, 80)}"`);
+        console.debug(`Memos Sync: [merge] new block: type=${b.type}, uid=${b.uid || 'N/A'}, lines=${b.lines.length}, firstLine="${b.lines[0]?.substring(0, 80)}"`);
       }
 
       // Build maps for quick lookup
@@ -388,9 +380,9 @@ export function mergeMemosIntoNote(
       // Find new memos that need to be inserted (not in existing section)
       const newUids = newMemoOrder.filter((uid) => !existingMemoUids.has(uid));
 
-      console.log(`Memos Sync: [merge] existingMemoUids: [${[...existingMemoUids].join(', ')}]`);
-      console.log(`Memos Sync: [merge] newMemoOrder (from API): [${newMemoOrder.join(', ')}]`);
-      console.log(`Memos Sync: [merge] newUids (to insert): [${newUids.join(', ')}]`);
+      console.debug(`Memos Sync: [merge] existingMemoUids: [${[...existingMemoUids].join(', ')}]`);
+      console.debug(`Memos Sync: [merge] newMemoOrder (from API): [${newMemoOrder.join(', ')}]`);
+      console.debug(`Memos Sync: [merge] newUids (to insert): [${newUids.join(', ')}]`);
 
       // Build a position map: for each new uid, find where it should be inserted
       // based on the API order. A new memo should be placed right before the next
@@ -454,11 +446,11 @@ export function mergeMemosIntoNote(
             const oldContent = oldTrimmedLines.join('\n');
             const newContent = newTrimmedLines.join('\n');
             if (oldContent !== newContent) {
-              console.log(`Memos Sync: [merge] UPDATING memo uid=${block.uid}`);
-              console.log(`Memos Sync: [merge]   OLD: "${oldContent.substring(0, 100)}"`);
-              console.log(`Memos Sync: [merge]   NEW: "${newContent.substring(0, 100)}"`);
+              console.debug(`Memos Sync: [merge] UPDATING memo uid=${block.uid}`);
+              console.debug(`Memos Sync: [merge]   OLD: "${oldContent.substring(0, 100)}"`);
+              console.debug(`Memos Sync: [merge]   NEW: "${newContent.substring(0, 100)}"`);
             } else {
-              console.log(`Memos Sync: [merge] memo uid=${block.uid} unchanged`);
+              console.debug(`Memos Sync: [merge] memo uid=${block.uid} unchanged`);
             }
             mergedLines.push(...updated.lines);
           }

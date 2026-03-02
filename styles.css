@@ -1,0 +1,120 @@
+/* Diary Memos Sync Plugin Styles */
+
+.memos-sync-sidebar {
+  padding: 12px;
+}
+
+.memos-sync-header h4 {
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.memos-sync-status {
+  margin-bottom: 16px;
+  padding: 8px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+}
+
+.memos-sync-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 12px;
+}
+
+.memos-sync-label {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.memos-sync-value {
+  color: var(--text-normal);
+  max-width: 60%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.memos-sync-success {
+  color: var(--text-success) !important;
+}
+
+.memos-sync-error {
+  color: var(--text-error) !important;
+}
+
+.memos-sync-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.memos-sync-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.15s ease;
+}
+
+.memos-sync-btn:hover {
+  background: var(--background-modifier-hover);
+}
+
+.memos-sync-btn-primary {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-color: var(--interactive-accent);
+  font-weight: 600;
+}
+
+.memos-sync-btn-primary:hover {
+  opacity: 0.9;
+}
+
+.memos-sync-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.memos-sync-btn-loading .memos-sync-btn-icon {
+  animation: memos-spin 1s linear infinite;
+}
+
+.memos-sync-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 4px;
+}
+
+.memos-sync-btn-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+@keyframes memos-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.memos-sync-info {
+  padding: 8px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.memos-sync-info-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}

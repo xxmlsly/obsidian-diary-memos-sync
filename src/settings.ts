@@ -66,10 +66,12 @@ export class MemosSyncSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     // --- Memos Server ---
-    containerEl.createEl("h2", { text: "Memos Server Configuration" });
+    new Setting(containerEl)
+      .setName("Memos server configuration")
+      .setHeading();
 
     new Setting(containerEl)
-      .setName("Memos Server URL")
+      .setName("Memos server URL")
       .setDesc(
         "The base URL of your Memos instance (e.g., https://memos.example.com)"
       )
@@ -84,7 +86,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Access Token")
+      .setName("Access token")
       .setDesc("Your Memos API access token for authentication")
       .addText((text) =>
         text
@@ -97,10 +99,12 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     // --- Sync Settings ---
-    containerEl.createEl("h2", { text: "Sync Settings" });
+    new Setting(containerEl)
+      .setName("Sync settings")
+      .setHeading();
 
     new Setting(containerEl)
-      .setName("Auto Sync")
+      .setName("Auto sync")
       .setDesc("Automatically sync memos at a regular interval")
       .addToggle((toggle) =>
         toggle.setValue(this.plugin.settings.autoSync).onChange(async (value) => {
@@ -111,7 +115,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Sync Interval (minutes)")
+      .setName("Sync interval (minutes)")
       .setDesc("How often to auto-sync memos (in minutes)")
       .addText((text) =>
         text
@@ -128,7 +132,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Sync Limit")
+      .setName("Sync limit")
       .setDesc("Maximum number of memos to fetch per sync")
       .addText((text) =>
         text
@@ -144,10 +148,12 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     // --- File & Folder ---
-    containerEl.createEl("h2", { text: "File & Folder Settings" });
+    new Setting(containerEl)
+      .setName("File and folder settings")
+      .setHeading();
 
     new Setting(containerEl)
-      .setName("Daily Notes Folder")
+      .setName("Daily notes folder")
       .setDesc("Folder where daily notes are stored")
       .addText((text) =>
         text
@@ -160,7 +166,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("File Name Format")
+      .setName("File name format")
       .setDesc(
         "Date format for daily note file names (e.g., YYYY-MM-DD, YYYY/MM/YYYY-MM-DD)"
       )
@@ -175,10 +181,12 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     // --- Content Formatting ---
-    containerEl.createEl("h2", { text: "Content Formatting" });
+    new Setting(containerEl)
+      .setName("Content formatting")
+      .setHeading();
 
     new Setting(containerEl)
-      .setName("Memos Section Heading")
+      .setName("Memos section heading")
       .setDesc("The heading text for the memos section in your daily note")
       .addText((text) =>
         text
@@ -191,7 +199,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Insert Position")
+      .setName("Insert position")
       .setDesc("Where to insert the memos section in the daily note")
       .addDropdown((dropdown) =>
         dropdown
@@ -205,7 +213,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Memo Template")
+      .setName("Memo template")
       .setDesc(
         "Template for each memo. Placeholders: {{time}}, {{content}}, {{tags}}, {{uid}}"
       )
@@ -220,7 +228,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Time Format")
+      .setName("Time format")
       .setDesc("Format for memo timestamps (e.g., HH:mm, HH:mm:ss)")
       .addText((text) =>
         text
@@ -233,7 +241,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Tag Prefix")
+      .setName("Tag prefix")
       .setDesc("Prefix for tags in memos (e.g., # or #memos/)")
       .addText((text) =>
         text
@@ -246,10 +254,12 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     // --- Startup & Auto Triggers ---
-    containerEl.createEl("h2", { text: "Auto Triggers" });
+    new Setting(containerEl)
+      .setName("Auto triggers")
+      .setHeading();
 
     new Setting(containerEl)
-      .setName("Sync on Startup")
+      .setName("Sync on startup")
       .setDesc(
         "Automatically sync once after Obsidian starts. Changes take effect on next launch."
       )
@@ -267,7 +277,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Sync on Daily Note Open")
+      .setName("Sync on daily note open")
       .setDesc(
         "When you open a daily note within the lookback range, automatically sync the latest memos for that date."
       )
@@ -282,10 +292,12 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     // --- Filter ---
-    containerEl.createEl("h2", { text: "Filter" });
+    new Setting(containerEl)
+      .setName("Filter")
+      .setHeading();
 
     new Setting(containerEl)
-      .setName("Sync Lookback Days")
+      .setName("Sync lookback days")
       .setDesc(
         "How many past days to sync in addition to today (0 = today only, 3 = today + past 3 days). Useful for catching edits to older memos."
       )
@@ -303,7 +315,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Filter by Tag")
+      .setName("Filter by tag")
       .setDesc("Only sync memos that contain this tag (leave empty to sync all)")
       .addText((text) =>
         text
@@ -316,10 +328,12 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     // --- Actions ---
-    containerEl.createEl("h2", { text: "Actions" });
+    new Setting(containerEl)
+      .setName("Actions")
+      .setHeading();
 
     new Setting(containerEl)
-      .setName("Test Connection")
+      .setName("Test connection")
       .setDesc("Test the connection to your Memos server")
       .addButton((button) =>
         button.setButtonText("Test").onClick(async () => {
@@ -343,7 +357,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       );
 
     new Setting(containerEl)
-      .setName("Sync Now")
+      .setName("Sync now")
       .setDesc("Manually trigger a sync right now")
       .addButton((button) =>
         button.setButtonText("Sync Now").onClick(async () => {
