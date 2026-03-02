@@ -29,7 +29,7 @@ export class MemosSyncView extends ItemView {
   }
 
   getDisplayText(): string {
-    return "Diary Memos Sync";
+    return "Diary Memos sync";
   }
 
   getIcon(): string {
@@ -43,7 +43,7 @@ export class MemosSyncView extends ItemView {
 
     // Header
     const header = container.createDiv({ cls: "memos-sync-header" });
-    header.createEl("h4", { text: "📝 Memos Sync" });
+    header.createEl("h4", { text: "📝 Memos sync" });
 
     // Status section
     const statusSection = container.createDiv({ cls: "memos-sync-status" });
@@ -152,7 +152,7 @@ export class MemosSyncView extends ItemView {
     // Info section
     const infoSection = container.createDiv({ cls: "memos-sync-info" });
     infoSection.createEl("p", {
-      text: "Syncs your Memos to today's daily note. Configure server URL and access token in Settings.",
+      text: "Syncs your Memos to today's daily note. Configure server URL and access token in plugin options.",
       cls: "memos-sync-info-text",
     });
 

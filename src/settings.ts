@@ -85,9 +85,9 @@ export class MemosSyncSettingTab extends PluginSettingTab {
           })
       );
 
-    new Setting(containerEl)
-      .setName("Access token")
-      .setDesc("Your Memos API access token for authentication")
+      new Setting(containerEl)
+        .setName("Access token")
+        .setDesc("Your Memos API access token for authentication")
       .addText((text) =>
         text
           .setPlaceholder("Enter your access token")
@@ -98,14 +98,14 @@ export class MemosSyncSettingTab extends PluginSettingTab {
           })
       );
 
-    // --- Sync Settings ---
+    // --- Sync behavior ---
     new Setting(containerEl)
-      .setName("Sync options")
+      .setName("Sync behavior")
       .setHeading();
 
     new Setting(containerEl)
       .setName("Auto sync")
-      .setDesc("Automatically sync memos at a regular interval")
+      .setDesc("Automatically sync Memos at a regular interval")
       .addToggle((toggle) =>
         toggle.setValue(this.plugin.settings.autoSync).onChange(async (value) => {
           this.plugin.settings.autoSync = value;
@@ -116,7 +116,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Sync interval (minutes)")
-      .setDesc("How often to auto-sync memos (in minutes)")
+      .setDesc("How often to auto-sync Memos (in minutes)")
       .addText((text) =>
         text
           .setPlaceholder("30")
@@ -133,7 +133,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Sync limit")
-      .setDesc("Maximum number of memos to fetch per sync")
+      .setDesc("Maximum number of Memos to fetch per sync")
       .addText((text) =>
         text
           .setPlaceholder("100")
@@ -170,10 +170,10 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       .setDesc(
         "Date format for daily note file names (e.g., YYYY-MM-DD, YYYY/MM/YYYY-MM-DD)"
       )
-      .addText((text) =>
-        text
-          .setPlaceholder("YYYY-MM-DD")
-          .setValue(this.plugin.settings.fileNameFormat)
+        .addText((text) =>
+          text
+            .setPlaceholder("YYYY-MM-DD")
+            .setValue(this.plugin.settings.fileNameFormat)
           .onChange(async (value) => {
             this.plugin.settings.fileNameFormat = value.trim();
             await this.plugin.saveSettings();
@@ -187,7 +187,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Memos section heading")
-      .setDesc("The heading text for the memos section in your daily note")
+      .setDesc("The heading text for the Memos section in your daily note")
       .addText((text) =>
         text
           .setPlaceholder("## Memos")
@@ -200,7 +200,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Insert position")
-      .setDesc("Where to insert the memos section in the daily note")
+      .setDesc("Where to insert the Memos section in the daily note")
       .addDropdown((dropdown) =>
         dropdown
           .addOption("bottom", "Bottom of file")
@@ -279,7 +279,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("Sync on daily note open")
       .setDesc(
-        "When you open a daily note within the lookback range, automatically sync the latest memos for that date."
+        "When you open a daily note within the lookback range, automatically sync the latest Memos for that date."
       )
       .addToggle((toggle) =>
         toggle
@@ -299,7 +299,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("Sync lookback days")
       .setDesc(
-        "How many past days to sync in addition to today (0 = today only, 3 = today + past 3 days). Useful for catching edits to older memos."
+        "How many past days to sync in addition to today (0 = today only, 3 = today + past 3 days). Useful for catching edits to older Memos."
       )
       .addText((text) =>
         text
@@ -316,7 +316,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Filter by tag")
-      .setDesc("Only sync memos that contain this tag (leave empty to sync all)")
+      .setDesc("Only sync Memos that contain this tag (leave empty to sync all)")
       .addText((text) =>
         text
           .setPlaceholder("")
@@ -360,7 +360,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
       .setName("Sync now")
       .setDesc("Manually trigger a sync right now")
       .addButton((button) =>
-        button.setButtonText("Sync Now").onClick(async () => {
+        button.setButtonText("Sync now").onClick(async () => {
           await this.plugin.syncMemos();
         })
       );

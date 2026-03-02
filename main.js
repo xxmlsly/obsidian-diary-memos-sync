@@ -72,15 +72,15 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Sync options").setHeading();
-    new import_obsidian.Setting(containerEl).setName("Auto sync").setDesc("Automatically sync memos at a regular interval").addToggle(
+    new import_obsidian.Setting(containerEl).setName("Sync behavior").setHeading();
+    new import_obsidian.Setting(containerEl).setName("Auto sync").setDesc("Automatically sync Memos at a regular interval").addToggle(
       (toggle) => toggle.setValue(this.plugin.settings.autoSync).onChange(async (value) => {
         this.plugin.settings.autoSync = value;
         await this.plugin.saveSettings();
         this.plugin.resetAutoSync();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Sync interval (minutes)").setDesc("How often to auto-sync memos (in minutes)").addText(
+    new import_obsidian.Setting(containerEl).setName("Sync interval (minutes)").setDesc("How often to auto-sync Memos (in minutes)").addText(
       (text) => text.setPlaceholder("30").setValue(String(this.plugin.settings.syncIntervalMinutes)).onChange(async (value) => {
         const parsed = parseInt(value, 10);
         if (!isNaN(parsed) && parsed >= 1) {
@@ -90,7 +90,7 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
         }
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Sync limit").setDesc("Maximum number of memos to fetch per sync").addText(
+    new import_obsidian.Setting(containerEl).setName("Sync limit").setDesc("Maximum number of Memos to fetch per sync").addText(
       (text) => text.setPlaceholder("100").setValue(String(this.plugin.settings.syncLimit)).onChange(async (value) => {
         const parsed = parseInt(value, 10);
         if (!isNaN(parsed) && parsed >= 1) {
@@ -115,13 +115,13 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
     new import_obsidian.Setting(containerEl).setName("Content formatting").setHeading();
-    new import_obsidian.Setting(containerEl).setName("Memos section heading").setDesc("The heading text for the memos section in your daily note").addText(
+    new import_obsidian.Setting(containerEl).setName("Memos section heading").setDesc("The heading text for the Memos section in your daily note").addText(
       (text) => text.setPlaceholder("## Memos").setValue(this.plugin.settings.memosHeading).onChange(async (value) => {
         this.plugin.settings.memosHeading = value.trim();
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Insert position").setDesc("Where to insert the memos section in the daily note").addDropdown(
+    new import_obsidian.Setting(containerEl).setName("Insert position").setDesc("Where to insert the Memos section in the daily note").addDropdown(
       (dropdown) => dropdown.addOption("bottom", "Bottom of file").addOption("top", "Top of file").setValue(this.plugin.settings.insertPosition).onChange(async (value) => {
         this.plugin.settings.insertPosition = value;
         await this.plugin.saveSettings();
@@ -157,7 +157,7 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
     new import_obsidian.Setting(containerEl).setName("Sync on daily note open").setDesc(
-      "When you open a daily note within the lookback range, automatically sync the latest memos for that date."
+      "When you open a daily note within the lookback range, automatically sync the latest Memos for that date."
     ).addToggle(
       (toggle) => toggle.setValue(this.plugin.settings.syncOnFileOpen).onChange(async (value) => {
         this.plugin.settings.syncOnFileOpen = value;
@@ -167,7 +167,7 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
     );
     new import_obsidian.Setting(containerEl).setName("Filter").setHeading();
     new import_obsidian.Setting(containerEl).setName("Sync lookback days").setDesc(
-      "How many past days to sync in addition to today (0 = today only, 3 = today + past 3 days). Useful for catching edits to older memos."
+      "How many past days to sync in addition to today (0 = today only, 3 = today + past 3 days). Useful for catching edits to older Memos."
     ).addText(
       (text) => text.setPlaceholder("3").setValue(String(this.plugin.settings.syncLookbackDays)).onChange(async (value) => {
         const parsed = parseInt(value, 10);
@@ -177,7 +177,7 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
         }
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Filter by tag").setDesc("Only sync memos that contain this tag (leave empty to sync all)").addText(
+    new import_obsidian.Setting(containerEl).setName("Filter by tag").setDesc("Only sync Memos that contain this tag (leave empty to sync all)").addText(
       (text) => text.setPlaceholder("").setValue(this.plugin.settings.filterTag).onChange(async (value) => {
         this.plugin.settings.filterTag = value.trim();
         await this.plugin.saveSettings();
@@ -204,7 +204,7 @@ var MemosSyncSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
     new import_obsidian.Setting(containerEl).setName("Sync now").setDesc("Manually trigger a sync right now").addButton(
-      (button) => button.setButtonText("Sync Now").onClick(async () => {
+      (button) => button.setButtonText("Sync now").onClick(async () => {
         await this.plugin.syncMemos();
       })
     );
@@ -806,19 +806,19 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
   async onload() {
     await this.loadSettings();
     this.memosApi = new MemosApi(this.settings);
-    this.addRibbonIcon("refresh-cw", "Diary Memos Sync", () => {
+    this.addRibbonIcon("refresh-cw", "Diary Memos sync", () => {
       void this.syncMemos();
     });
     this.addCommand({
       id: "sync-memos-now",
-      name: "Sync Memos Now",
+      name: "Sync Memos now",
       callback: () => {
         void this.syncMemos();
       }
     });
     this.addCommand({
       id: "toggle-auto-sync",
-      name: "Toggle Auto Sync",
+      name: "Toggle auto sync",
       callback: () => {
         this.settings.autoSync = !this.settings.autoSync;
         void this.saveSettings();
@@ -840,7 +840,8 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
     this.clearStartupSync();
   }
   async loadSettings() {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    const loadedData = await this.loadData();
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, loadedData);
   }
   async saveSettings() {
     await this.saveData(this.settings);
@@ -851,11 +852,11 @@ var MemosSyncPlugin = class extends import_obsidian3.Plugin {
    */
   async syncMemos() {
     if (!this.settings.memosServerUrl) {
-      new import_obsidian3.Notice("\u26A0\uFE0F Please configure Memos server URL in settings");
+      new import_obsidian3.Notice("\u26A0\uFE0F Please configure Memos server URL in plugin options");
       return;
     }
     if (!this.settings.memosAccessToken) {
-      new import_obsidian3.Notice("\u26A0\uFE0F Please configure Memos access token in settings");
+      new import_obsidian3.Notice("\u26A0\uFE0F Please configure Memos access token in plugin options");
       return;
     }
     try {

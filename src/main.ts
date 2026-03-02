@@ -30,14 +30,14 @@ export default class MemosSyncPlugin extends Plugin {
     this.memosApi = new MemosApi(this.settings);
 
     // Add ribbon icon
-    this.addRibbonIcon("refresh-cw", "Diary Memos Sync", () => {
+    this.addRibbonIcon("refresh-cw", "Diary Memos sync", () => {
       void this.syncMemos();
     });
 
     // Add commands
     this.addCommand({
       id: "sync-memos-now",
-      name: "Sync Memos Now",
+      name: "Sync Memos now",
       callback: () => {
         void this.syncMemos();
       },
@@ -45,7 +45,7 @@ export default class MemosSyncPlugin extends Plugin {
 
     this.addCommand({
       id: "toggle-auto-sync",
-      name: "Toggle Auto Sync",
+      name: "Toggle auto sync",
       callback: () => {
         this.settings.autoSync = !this.settings.autoSync;
         void this.saveSettings();
@@ -77,7 +77,8 @@ export default class MemosSyncPlugin extends Plugin {
   }
 
   async loadSettings() {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    const loadedData = await this.loadData() as Partial<MemosSyncSettings> | null;
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, loadedData);
   }
 
   async saveSettings() {
@@ -90,12 +91,12 @@ export default class MemosSyncPlugin extends Plugin {
    */
   async syncMemos() {
     if (!this.settings.memosServerUrl) {
-      new Notice("⚠️ Please configure Memos server URL in settings");
+      new Notice("⚠️ Please configure Memos server URL in plugin options");
       return;
     }
 
     if (!this.settings.memosAccessToken) {
-      new Notice("⚠️ Please configure Memos access token in settings");
+      new Notice("⚠️ Please configure Memos access token in plugin options");
       return;
     }
 
