@@ -100,7 +100,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
 
     // --- Sync Settings ---
     new Setting(containerEl)
-      .setName("Sync settings")
+      .setName("Sync options")
       .setHeading();
 
     new Setting(containerEl)
@@ -149,7 +149,7 @@ export class MemosSyncSettingTab extends PluginSettingTab {
 
     // --- File & Folder ---
     new Setting(containerEl)
-      .setName("File and folder settings")
+      .setName("File and folder paths")
       .setHeading();
 
     new Setting(containerEl)

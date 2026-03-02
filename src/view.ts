@@ -1,7 +1,17 @@
-import { ItemView, WorkspaceLeaf, setIcon } from "obsidian";
+import { ItemView, WorkspaceLeaf, setIcon, App } from "obsidian";
 import type MemosSyncPlugin from "./main";
 
 export const VIEW_TYPE_MEMOS_SYNC = "memos-sync-view";
+
+/**
+ * Extended App interface for accessing internal setting API
+ */
+interface AppWithSetting extends App {
+  setting: {
+    open: () => void;
+    openTabById: (id: string) => void;
+  };
+}
 
 export class MemosSyncView extends ItemView {
   plugin: MemosSyncPlugin;
@@ -77,7 +87,7 @@ export class MemosSyncView extends ItemView {
     syncBtn.addEventListener("click", () => {
       syncBtn.disabled = true;
       syncBtn.addClass("memos-sync-btn-loading");
-      this.plugin.syncMemos().then(() => {
+      void this.plugin.syncMemos().then(() => {
         this.updateView();
       }).finally(() => {
         syncBtn.disabled = false;
@@ -94,7 +104,7 @@ export class MemosSyncView extends ItemView {
     testBtn.createSpan({ text: " Test Connection" });
     testBtn.addEventListener("click", () => {
       testBtn.disabled = true;
-      this.plugin.memosApi.testConnectionDetailed().then((result) => {
+      void this.plugin.memosApi.testConnectionDetailed().then((result) => {
         if (this.statusEl) {
           if (result.ok) {
             this.statusEl.setText("✅ Connected" + (result.version ? ` (${result.version})` : ""));
@@ -133,11 +143,10 @@ export class MemosSyncView extends ItemView {
     setIcon(settingsBtnIcon, "settings");
     settingsBtn.createSpan({ text: " Settings" });
     settingsBtn.addEventListener("click", () => {
-      // Open plugin settings
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this.app as any).setting.open();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (this.app as any).setting.openTabById("memos-sync");
+      // Open plugin settings using internal API
+      const appWithSetting = this.app as AppWithSetting;
+      appWithSetting.setting.open();
+      appWithSetting.setting.openTabById("memos-sync");
     });
 
     // Info section

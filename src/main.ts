@@ -31,7 +31,7 @@ export default class MemosSyncPlugin extends Plugin {
 
     // Add ribbon icon
     this.addRibbonIcon("refresh-cw", "Diary Memos Sync", () => {
-      this.syncMemos();
+      void this.syncMemos();
     });
 
     // Add commands
@@ -39,7 +39,7 @@ export default class MemosSyncPlugin extends Plugin {
       id: "sync-memos-now",
       name: "Sync Memos Now",
       callback: () => {
-        this.syncMemos();
+        void this.syncMemos();
       },
     });
 
@@ -48,7 +48,7 @@ export default class MemosSyncPlugin extends Plugin {
       name: "Toggle Auto Sync",
       callback: () => {
         this.settings.autoSync = !this.settings.autoSync;
-        this.saveSettings();
+        void this.saveSettings();
         this.resetAutoSync();
         new Notice(
           `Memos auto-sync ${this.settings.autoSync ? "enabled" : "disabled"}`
@@ -211,7 +211,7 @@ export default class MemosSyncPlugin extends Plugin {
       const intervalMs = this.settings.syncIntervalMinutes * 60 * 1000;
       this.syncInterval = window.setInterval(() => {
         console.debug("Memos Sync: Auto-sync triggered");
-        this.syncMemos();
+        void this.syncMemos();
       }, intervalMs);
 
       // Register the interval so Obsidian cleans it up
@@ -243,7 +243,7 @@ export default class MemosSyncPlugin extends Plugin {
 
     this.startupTimeout = window.setTimeout(() => {
       console.debug(`Memos Sync: Startup sync triggered after ${delaySeconds}s`);
-      this.syncMemos();
+      void this.syncMemos();
     }, delaySeconds * 1000);
 
     // Register so Obsidian cleans it up
@@ -306,7 +306,7 @@ export default class MemosSyncPlugin extends Plugin {
 
         this.recentlySynced.set(dateStr, Date.now());
         console.debug(`Memos Sync: [file-open] Sync triggered for ${dateStr} (file: ${file.path})`);
-        this.syncSingleDate(dateStr, fileDate);
+        void this.syncSingleDate(dateStr, fileDate);
       })
     );
 
